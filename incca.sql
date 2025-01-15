@@ -30,6 +30,7 @@ CREATE TABLE `asignaturas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdAsignatura`),
+  UNIQUE KEY `asignaturas_codasignatura_unique` (`CodAsignatura`),
   KEY `asignaturas_iddepartamento_foreign` (`IdDepartamento`),
   CONSTRAINT `asignaturas_iddepartamento_foreign` FOREIGN KEY (`IdDepartamento`) REFERENCES `departamentos` (`IdDepartamento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -65,7 +66,6 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
-INSERT INTO `cache` VALUES ('a17961fa74e9275d529f489537f179c05d50c2f3','i:1;',1733173123),('a17961fa74e9275d529f489537f179c05d50c2f3:timer','i:1733173123;',1733173123),('instructivos','O:29:\"Illuminate\\Support\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:1;s:30:\"Prueba Instructivo Telefónico\";i:2;s:24:\"Prueba Instructivo Email\";}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2048535331);
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,6 +94,110 @@ LOCK TABLES `cache_locks` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `cobros_estudiante`
+--
+
+DROP TABLE IF EXISTS `cobros_estudiante`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cobros_estudiante` (
+  `IdCobros` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `IdCostEstudiante` bigint unsigned NOT NULL,
+  `NumCuota` int unsigned NOT NULL,
+  `ValorCobro` decimal(10,2) NOT NULL,
+  `ValorAbonado` decimal(10,2) NOT NULL,
+  `MesCobro` int unsigned NOT NULL,
+  `YearCobro` int unsigned NOT NULL,
+  `IdFacturaPSE` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`IdCobros`),
+  KEY `cobros_estudiante_idcostestudiante_foreign` (`IdCostEstudiante`),
+  CONSTRAINT `cobros_estudiante_idcostestudiante_foreign` FOREIGN KEY (`IdCostEstudiante`) REFERENCES `costos_estudiante` (`IdCostEstudiante`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cobros_estudiante`
+--
+
+LOCK TABLES `cobros_estudiante` WRITE;
+/*!40000 ALTER TABLE `cobros_estudiante` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cobros_estudiante` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `costos`
+--
+
+DROP TABLE IF EXISTS `costos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `costos` (
+  `IdCostos` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `DesCostos` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `IdProgAcademico` bigint unsigned NOT NULL,
+  `IdProgAcaPeriodo` bigint unsigned NOT NULL,
+  `Valor` decimal(10,2) NOT NULL,
+  `CodContable` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NumMaxCuotas` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `CargoFijo` int unsigned NOT NULL DEFAULT '1',
+  `CredMinimo` int unsigned NOT NULL,
+  `CredMaximo` int unsigned NOT NULL,
+  `PorcCuota1` int unsigned NOT NULL,
+  `CostoOcasional` int unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`IdCostos`),
+  KEY `costos_idprogacademico_foreign` (`IdProgAcademico`),
+  KEY `costos_idprogacaperiodo_foreign` (`IdProgAcaPeriodo`),
+  CONSTRAINT `costos_idprogacademico_foreign` FOREIGN KEY (`IdProgAcademico`) REFERENCES `progacademico` (`IdProgAcademico`),
+  CONSTRAINT `costos_idprogacaperiodo_foreign` FOREIGN KEY (`IdProgAcaPeriodo`) REFERENCES `progaca_periodo` (`IdProgAcaPeriodo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `costos`
+--
+
+LOCK TABLES `costos` WRITE;
+/*!40000 ALTER TABLE `costos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `costos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `costos_estudiante`
+--
+
+DROP TABLE IF EXISTS `costos_estudiante`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `costos_estudiante` (
+  `IdCostEstudiante` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `IdEstudProAca` bigint unsigned NOT NULL,
+  `IdCostos` bigint unsigned NOT NULL,
+  `NumCuotas` int unsigned NOT NULL,
+  `FecLiquidacion` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`IdCostEstudiante`),
+  KEY `costos_estudiante_idestudproaca_foreign` (`IdEstudProAca`),
+  KEY `costos_estudiante_idcostos_foreign` (`IdCostos`),
+  CONSTRAINT `costos_estudiante_idcostos_foreign` FOREIGN KEY (`IdCostos`) REFERENCES `costos` (`IdCostos`),
+  CONSTRAINT `costos_estudiante_idestudproaca_foreign` FOREIGN KEY (`IdEstudProAca`) REFERENCES `estud_progacademico` (`IdEstudProAca`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `costos_estudiante`
+--
+
+LOCK TABLES `costos_estudiante` WRITE;
+/*!40000 ALTER TABLE `costos_estudiante` DISABLE KEYS */;
+/*!40000 ALTER TABLE `costos_estudiante` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `departamentos`
 --
 
@@ -102,10 +206,12 @@ DROP TABLE IF EXISTS `departamentos`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `departamentos` (
   `IdDepartamento` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `CodDepartamento` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   `DesDepartamento` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`IdDepartamento`)
+  PRIMARY KEY (`IdDepartamento`),
+  UNIQUE KEY `departamentos_coddepartamento_unique` (`CodDepartamento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,6 +277,43 @@ INSERT INTO `estud_estados` VALUES (1,'Activo',1,NULL,NULL),(2,'Aspirante',1,NUL
 UNLOCK TABLES;
 
 --
+-- Table structure for table `estud_progacademico`
+--
+
+DROP TABLE IF EXISTS `estud_progacademico`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estud_progacademico` (
+  `IdEstudProAca` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `IdPersona` bigint unsigned NOT NULL,
+  `IdProgAcademico` bigint unsigned NOT NULL,
+  `IdPensum` bigint unsigned NOT NULL,
+  `IdProgAca_Periodo` bigint unsigned NOT NULL,
+  `FecIngreso` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`IdEstudProAca`),
+  UNIQUE KEY `estud_progacademico_idpersona_idprogacademico_unique` (`IdPersona`,`IdProgAcademico`),
+  KEY `estud_progacademico_idprogacademico_foreign` (`IdProgAcademico`),
+  KEY `estud_progacademico_idpensum_foreign` (`IdPensum`),
+  KEY `estud_progacademico_idprogaca_periodo_foreign` (`IdProgAca_Periodo`),
+  CONSTRAINT `estud_progacademico_idpensum_foreign` FOREIGN KEY (`IdPensum`) REFERENCES `progacademico` (`IdProgAcademico`),
+  CONSTRAINT `estud_progacademico_idpersona_foreign` FOREIGN KEY (`IdPersona`) REFERENCES `personas` (`IdPersona`),
+  CONSTRAINT `estud_progacademico_idprogaca_periodo_foreign` FOREIGN KEY (`IdProgAca_Periodo`) REFERENCES `progaca_periodo` (`IdProgAcaPeriodo`),
+  CONSTRAINT `estud_progacademico_idprogacademico_foreign` FOREIGN KEY (`IdProgAcademico`) REFERENCES `progacademico` (`IdProgAcademico`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estud_progacademico`
+--
+
+LOCK TABLES `estud_progacademico` WRITE;
+/*!40000 ALTER TABLE `estud_progacademico` DISABLE KEYS */;
+/*!40000 ALTER TABLE `estud_progacademico` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `estudiante`
 --
 
@@ -197,7 +340,6 @@ CREATE TABLE `estudiante` (
 
 LOCK TABLES `estudiante` WRITE;
 /*!40000 ALTER TABLE `estudiante` DISABLE KEYS */;
-INSERT INTO `estudiante` VALUES (6,'10102020','samuel07@gmail.com',2,'2024-12-02 21:39:16','2024-12-02 21:39:16'),(7,'1005715048','juanbetancourt0013@gmail.com',2,'2024-12-02 21:42:42','2024-12-02 21:42:42');
 /*!40000 ALTER TABLE `estudiante` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,7 +418,7 @@ CREATE TABLE `inter_seguimientos` (
   KEY `inter_seguimientos_idinttipseguimiento_foreign` (`IdIntTipSeguimiento`),
   CONSTRAINT `inter_seguimientos_idinteresado_foreign` FOREIGN KEY (`IdInteresado`) REFERENCES `interesado` (`IdInteresado`),
   CONSTRAINT `inter_seguimientos_idinttipseguimiento_foreign` FOREIGN KEY (`IdIntTipSeguimiento`) REFERENCES `inter_tipseguimiento` (`IdIntTipSeguimiento`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -285,7 +427,6 @@ CREATE TABLE `inter_seguimientos` (
 
 LOCK TABLES `inter_seguimientos` WRITE;
 /*!40000 ALTER TABLE `inter_seguimientos` DISABLE KEYS */;
-INSERT INTO `inter_seguimientos` VALUES (1,2,1,'Se solicita envío de pensum.','2024-12-02 21:36:46','2024-12-02 21:36:46');
 /*!40000 ALTER TABLE `inter_seguimientos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,7 +479,7 @@ CREATE TABLE `interesado` (
   KEY `interesado_idintestseguimiento_foreign` (`IdIntEstSeguimiento`),
   CONSTRAINT `interesado_idintestseguimiento_foreign` FOREIGN KEY (`IdIntEstSeguimiento`) REFERENCES `inter_estseguimiento` (`IdIntEstSeguimiento`),
   CONSTRAINT `interesado_idprogacademico_foreign` FOREIGN KEY (`IdProgAcademico`) REFERENCES `progacademico` (`IdProgAcademico`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +488,7 @@ CREATE TABLE `interesado` (
 
 LOCK TABLES `interesado` WRITE;
 /*!40000 ALTER TABLE `interesado` DISABLE KEYS */;
-INSERT INTO `interesado` VALUES (1,'Juan Pablo','Betancourt Vargas','juanbetancourt0013@gmail.com',3,'3222663866',5,NULL,NULL),(2,'Samuel Luis Eduardo','Duarte Piedrahita','samuel07@gmail.com',3,'3115648690',5,'2024-12-03 02:34:36','2024-12-02 21:37:18');
+INSERT INTO `interesado` VALUES (1,'Juan Pablo','Betancourt Vargas','juanbetancourt0013@gmail.com',3,'3222663866',5,NULL,NULL);
 /*!40000 ALTER TABLE `interesado` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -423,7 +564,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=579 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1035 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -432,7 +573,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (542,'2024_10_21_000000_create_roles_table',1),(543,'2024_10_21_000001_create_users_table',1),(544,'2024_10_21_000002_create_cache_table',1),(545,'2024_10_21_000003_create_jobs_table',1),(546,'2024_10_21_224242_create_tipperiodo_table',1),(547,'2024_10_21_224251_create_nivprograma_table',1),(548,'2024_10_21_224301_create_progacademico_table',1),(549,'2024_10_22_152247_create_tipcapexcepcional_table',1),(550,'2024_10_22_163156_create_tipcomnegra_table',1),(551,'2024_10_22_163838_create_tipcondiscapacidad_table',1),(552,'2024_10_22_165310_create_tipdocidentidad_table',1),(553,'2024_10_22_171123_create_tipestcivil_table',1),(554,'2024_10_22_200757_create_tipestrato_table',1),(555,'2024_10_22_201149_create_tipgenbiologico_table',1),(556,'2024_10_22_201335_create_tipgrupetnico_table',1),(557,'2024_10_22_201642_create_tippaises_table',1),(558,'2024_10_22_201851_create_tippueindigena_table',1),(559,'2024_10_22_201956_create_tipveteranos_table',1),(560,'2024_10_22_202029_create_tipzonaresidencia_table',1),(561,'2024_10_23_125623_create_tipdiscapacidad_table',1),(562,'2024_10_23_133112_create_tipdepartamentos_table',1),(563,'2024_10_23_133248_create_tipmunicipios_table',1),(564,'2024_10_23_135142_create_personas_table',1),(565,'2024_10_30_164406_create_inter_estseguimiento_table',1),(566,'2024_10_30_164534_create_inter_tipseguimiento_table',1),(567,'2024_10_30_164534_create_interesado_table',1),(568,'2024_10_30_164536_create_inter_seguimientos_table',1),(569,'2024_11_14_153831_create_variables_table',1),(570,'2024_11_15_105056_create_estud_estados_table',1),(571,'2024_11_15_110543_create_estudiante_table',1),(572,'2024_11_15_110558_create_progaca_periodo_table',1),(573,'2024_11_18_111513_create_tip_periodopensum_table',1),(574,'2024_11_18_111514_create_pensum_table',1),(575,'2024_11_18_112449_create_departamentos_table',1),(576,'2024_11_18_112619_create_asignaturas_table',1),(577,'2024_11_18_112813_create_pen_asignatura_table',1),(578,'2024_11_18_113049_create_doc_tip_proceso_table',1);
+INSERT INTO `migrations` VALUES (994,'2024_10_21_000000_create_roles_table',1),(995,'2024_10_21_000001_create_users_table',1),(996,'2024_10_21_000002_create_cache_table',1),(997,'2024_10_21_000003_create_jobs_table',1),(998,'2024_10_21_224251_create_nivprograma_table',1),(999,'2024_10_21_224272_create_tip_periodopensum_table',1),(1000,'2024_10_21_224301_create_progacademico_table',1),(1001,'2024_10_22_152247_create_tipcapexcepcional_table',1),(1002,'2024_10_22_163156_create_tipcomnegra_table',1),(1003,'2024_10_22_163838_create_tipcondiscapacidad_table',1),(1004,'2024_10_22_165310_create_tipdocidentidad_table',1),(1005,'2024_10_22_171123_create_tipestcivil_table',1),(1006,'2024_10_22_200757_create_tipestrato_table',1),(1007,'2024_10_22_201149_create_tipgenbiologico_table',1),(1008,'2024_10_22_201335_create_tipgrupetnico_table',1),(1009,'2024_10_22_201642_create_tippaises_table',1),(1010,'2024_10_22_201851_create_tippueindigena_table',1),(1011,'2024_10_22_201956_create_tipveteranos_table',1),(1012,'2024_10_22_202029_create_tipzonaresidencia_table',1),(1013,'2024_10_23_125623_create_tipdiscapacidad_table',1),(1014,'2024_10_23_133112_create_tipdepartamentos_table',1),(1015,'2024_10_23_133248_create_tipmunicipios_table',1),(1016,'2024_10_23_135142_create_personas_table',1),(1017,'2024_10_30_164406_create_inter_estseguimiento_table',1),(1018,'2024_10_30_164534_create_inter_tipseguimiento_table',1),(1019,'2024_10_30_164534_create_interesado_table',1),(1020,'2024_10_30_164536_create_inter_seguimientos_table',1),(1021,'2024_11_14_153831_create_variables_table',1),(1022,'2024_11_15_105056_create_estud_estados_table',1),(1023,'2024_11_15_110543_create_estudiante_table',1),(1024,'2024_11_15_110558_create_progaca_periodo_table',1),(1025,'2024_11_18_111514_create_pensum_table',1),(1026,'2024_11_18_112449_create_departamentos_table',1),(1027,'2024_11_18_112619_create_asignaturas_table',1),(1028,'2024_11_18_112813_create_pen_asignatura_table',1),(1029,'2024_11_18_113049_create_doc_tip_proceso_table',1),(1030,'2024_12_10_101740_create_estud_progacademico_table',1),(1031,'2024_12_10_163334_create_pen_asignatura_requisitos_table',1),(1032,'2024_12_18_082754_create_costos_table',1),(1033,'2024_12_18_082825_create_costos_estudiante_table',1),(1034,'2024_12_18_082838_create_cobros_estudiante_table',1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -494,16 +635,20 @@ DROP TABLE IF EXISTS `pen_asignatura`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pen_asignatura` (
-  `idPen_Asignatura` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `IdPen_Asignatura` bigint unsigned NOT NULL AUTO_INCREMENT,
   `numPeriodo` int unsigned NOT NULL DEFAULT '1',
   `Electiva` int unsigned NOT NULL DEFAULT '0',
   `numCreditos` int unsigned NOT NULL DEFAULT '0',
   `IdPensum` bigint unsigned NOT NULL,
   `IdAsignatura` bigint unsigned NOT NULL,
+  `NumCreditosPreRequisito` int unsigned NOT NULL DEFAULT '0',
+  `NumHorClase` int unsigned NOT NULL,
+  `AfectaPromedio` int unsigned NOT NULL DEFAULT '1',
+  `TipValoracion` int unsigned NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`idPen_Asignatura`),
-  KEY `pen_asignatura_idpensum_foreign` (`IdPensum`),
+  PRIMARY KEY (`IdPen_Asignatura`),
+  UNIQUE KEY `pen_asignatura_idpensum_idasignatura_unique` (`IdPensum`,`IdAsignatura`),
   KEY `pen_asignatura_idasignatura_foreign` (`IdAsignatura`),
   CONSTRAINT `pen_asignatura_idasignatura_foreign` FOREIGN KEY (`IdAsignatura`) REFERENCES `asignaturas` (`IdAsignatura`),
   CONSTRAINT `pen_asignatura_idpensum_foreign` FOREIGN KEY (`IdPensum`) REFERENCES `pensum` (`IdPensum`)
@@ -520,6 +665,37 @@ LOCK TABLES `pen_asignatura` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pen_asignatura_requisitos`
+--
+
+DROP TABLE IF EXISTS `pen_asignatura_requisitos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pen_asignatura_requisitos` (
+  `IdPenRequisito` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `IdPen_Asignatura` bigint unsigned NOT NULL,
+  `IdRequisito` bigint unsigned NOT NULL,
+  `Prerequisito` int unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`IdPenRequisito`),
+  UNIQUE KEY `pen_asignatura_requisitos_idpen_asignatura_idrequisito_unique` (`IdPen_Asignatura`,`IdRequisito`),
+  KEY `pen_asignatura_requisitos_idrequisito_foreign` (`IdRequisito`),
+  CONSTRAINT `pen_asignatura_requisitos_idpen_asignatura_foreign` FOREIGN KEY (`IdPen_Asignatura`) REFERENCES `pen_asignatura` (`IdPen_Asignatura`),
+  CONSTRAINT `pen_asignatura_requisitos_idrequisito_foreign` FOREIGN KEY (`IdRequisito`) REFERENCES `pen_asignatura` (`IdPen_Asignatura`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pen_asignatura_requisitos`
+--
+
+LOCK TABLES `pen_asignatura_requisitos` WRITE;
+/*!40000 ALTER TABLE `pen_asignatura_requisitos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pen_asignatura_requisitos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pensum`
 --
 
@@ -529,8 +705,8 @@ DROP TABLE IF EXISTS `pensum`;
 CREATE TABLE `pensum` (
   `IdPensum` bigint unsigned NOT NULL AUTO_INCREMENT,
   `IdProgAcademico` bigint unsigned NOT NULL,
-  `perAcademico_Inicial` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `perAcademico_Final` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `perAcademico_Inicial` bigint unsigned NOT NULL,
+  `perAcademico_Final` bigint unsigned DEFAULT NULL,
   `desPensum` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `numCredAprob` int unsigned NOT NULL,
   `promMinimo` decimal(4,2) NOT NULL,
@@ -540,10 +716,14 @@ CREATE TABLE `pensum` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdPensum`),
-  KEY `pensum_idprogacademico_foreign` (`IdProgAcademico`),
+  UNIQUE KEY `pensum_idprogacademico_codpensum_unique` (`IdProgAcademico`,`CodPensum`),
+  KEY `pensum_peracademico_inicial_foreign` (`perAcademico_Inicial`),
+  KEY `pensum_peracademico_final_foreign` (`perAcademico_Final`),
   KEY `pensum_idtipperiodos_foreign` (`IdTipPeriodos`),
   CONSTRAINT `pensum_idprogacademico_foreign` FOREIGN KEY (`IdProgAcademico`) REFERENCES `progacademico` (`IdProgAcademico`),
-  CONSTRAINT `pensum_idtipperiodos_foreign` FOREIGN KEY (`IdTipPeriodos`) REFERENCES `tip_periodopensum` (`IdTipPeriodos`)
+  CONSTRAINT `pensum_idtipperiodos_foreign` FOREIGN KEY (`IdTipPeriodos`) REFERENCES `tip_periodopensum` (`IdTipPeriodos`),
+  CONSTRAINT `pensum_peracademico_final_foreign` FOREIGN KEY (`perAcademico_Final`) REFERENCES `progaca_periodo` (`IdProgAcaPeriodo`),
+  CONSTRAINT `pensum_peracademico_inicial_foreign` FOREIGN KEY (`perAcademico_Inicial`) REFERENCES `progaca_periodo` (`IdProgAcaPeriodo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -566,7 +746,7 @@ DROP TABLE IF EXISTS `personas`;
 CREATE TABLE `personas` (
   `IdPersona` bigint unsigned NOT NULL AUTO_INCREMENT,
   `NumDocIdentidad` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `NumDocIdentidad_Num` bigint unsigned DEFAULT NULL,
+  `NumDocIdentidad_Num` int unsigned DEFAULT NULL,
   `IdTipDocIdentidad` bigint unsigned NOT NULL,
   `PriApellido` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
   `SegApellido` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -604,6 +784,7 @@ CREATE TABLE `personas` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdPersona`),
   UNIQUE KEY `personas_numdocidentidad_unique` (`NumDocIdentidad`),
+  UNIQUE KEY `personas_numdocidentidad_num_unique` (`NumDocIdentidad_Num`),
   KEY `personas_idtipdocidentidad_foreign` (`IdTipDocIdentidad`),
   KEY `personas_idpaisnacimiento_foreign` (`IdPaisNacimiento`),
   KEY `personas_idtipmunnacimiento_foreign` (`IdTipMunNacimiento`),
@@ -640,7 +821,7 @@ CREATE TABLE `personas` (
   CONSTRAINT `personas_idtippueindigena_foreign` FOREIGN KEY (`IdTipPueIndigena`) REFERENCES `tippueindigena` (`IdTipPueIndigena`),
   CONSTRAINT `personas_idtipveteranos_foreign` FOREIGN KEY (`IdTipVeteranos`) REFERENCES `tipveteranos` (`IdTipVeteranos`),
   CONSTRAINT `personas_idtipzonaresidencia_foreign` FOREIGN KEY (`IdTipZonaResidencia`) REFERENCES `tipzonaresidencia` (`IdTipZonaResidencia`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -649,7 +830,6 @@ CREATE TABLE `personas` (
 
 LOCK TABLES `personas` WRITE;
 /*!40000 ALTER TABLE `personas` DISABLE KEYS */;
-INSERT INTO `personas` VALUES (6,'10102020',10102020,1,'Duarte','Piedrahíta','Samuel','Luis Eduardo',NULL,NULL,'samuel07@gmail.com',NULL,'3115648690',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2024-12-02 21:39:16','2024-12-02 21:39:16'),(7,'1005715048',1005715048,1,'Betancourt','Vargas','Juan','Pablo',NULL,NULL,'juanbetancourt0013@gmail.com',NULL,'3222663866',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2024-12-02 21:42:42','2024-12-02 21:42:42');
 /*!40000 ALTER TABLE `personas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -663,7 +843,7 @@ DROP TABLE IF EXISTS `progaca_periodo`;
 CREATE TABLE `progaca_periodo` (
   `IdProgAcaPeriodo` bigint unsigned NOT NULL AUTO_INCREMENT,
   `IdProgAcademico` bigint unsigned NOT NULL,
-  `Peracademico` bigint unsigned NOT NULL,
+  `Peracademico` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ValMatNuevos` decimal(10,2) NOT NULL,
   `FecIniInscripciones` date NOT NULL,
   `FecFinInscripciones` date NOT NULL,
@@ -697,21 +877,22 @@ DROP TABLE IF EXISTS `progacademico`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `progacademico` (
   `IdProgAcademico` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `NomProgAcademico` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NomProgAcademico` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `IdNivPrograma` bigint unsigned NOT NULL,
-  `ResMen` int unsigned NOT NULL,
-  `FecResMen` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Snies` int unsigned NOT NULL,
+  `ResMen` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `FecResMen` date NOT NULL,
+  `Snies` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   `CodProgAcademico` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `IdTipPeriodo` bigint unsigned NOT NULL,
+  `IdTipPeriodos` bigint unsigned NOT NULL,
   `NumPeriodos` int unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdProgAcademico`),
+  UNIQUE KEY `progacademico_codprogacademico_unique` (`CodProgAcademico`),
   KEY `progacademico_idnivprograma_foreign` (`IdNivPrograma`),
-  KEY `progacademico_idtipperiodo_foreign` (`IdTipPeriodo`),
+  KEY `progacademico_idtipperiodos_foreign` (`IdTipPeriodos`),
   CONSTRAINT `progacademico_idnivprograma_foreign` FOREIGN KEY (`IdNivPrograma`) REFERENCES `nivprograma` (`IdNivPrograma`),
-  CONSTRAINT `progacademico_idtipperiodo_foreign` FOREIGN KEY (`IdTipPeriodo`) REFERENCES `tipperiodo` (`IdTipPeriodo`)
+  CONSTRAINT `progacademico_idtipperiodos_foreign` FOREIGN KEY (`IdTipPeriodos`) REFERENCES `tip_periodopensum` (`IdTipPeriodos`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -721,7 +902,7 @@ CREATE TABLE `progacademico` (
 
 LOCK TABLES `progacademico` WRITE;
 /*!40000 ALTER TABLE `progacademico` DISABLE KEYS */;
-INSERT INTO `progacademico` VALUES (1,'Administración de empresas',1,16408,'2013-11-18',14320,'101',1,9,NULL,NULL),(2,'Biología',1,2662,'2020-02-21',1063,'102',1,10,NULL,NULL),(3,'Cultura física',1,7912,'2020-05-20',1054,'103',1,10,NULL,NULL),(4,'Derecho - Bogotá',1,9114,'2014-06-11',1056,'104',1,10,NULL,NULL);
+INSERT INTO `progacademico` VALUES (1,'Administración de empresas',1,'16408','2013-11-18','14320','101',1,9,NULL,NULL),(2,'Biología',1,'2662','2020-02-21','1063','102',1,10,NULL,NULL),(3,'Cultura física',1,'7912','2020-05-20','1054','103',1,10,NULL,NULL),(4,'Derecho - Bogotá',1,'9114','2014-06-11','1056','104',1,10,NULL,NULL);
 /*!40000 ALTER TABLE `progacademico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -778,7 +959,6 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('jkBlu3z4xmR3Jlk0ASY7QpjXhCbLNGubbDFkdwhs',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo3OntzOjY6Il90b2tlbiI7czo0MDoiUG80dDI2Uk5XVDlnRjRzUzFwTkJWVXpXVGxpdmw2WXpBc2RDTDlQMSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQzOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2VzdHVkaWFudGVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2MDoiJDJ5JDEyJEMzVTNweHBTQVhKS3p4MGNLQmNLb3VaWS9EWHFZV0FLczBHeHkwUTlBcHc0STBCLnpPV0pDIjtzOjg6ImZpbGFtZW50IjthOjA6e319',1733176212),('vLMg0nlDuZxUCYcVwJHCN3iSDlZHpj0YuZ0RF24c',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTozOntzOjY6Il90b2tlbiI7czo0MDoiSmR0eTZTdDlJT0V3NXY3dGpMMm9lemVMcUhLOHJNaUg2SEt6SnVYUSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1733175277);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1156,32 +1336,6 @@ INSERT INTO `tippaises` VALUES (1,'170','Colombia',NULL,NULL),(2,'032','Argentin
 UNLOCK TABLES;
 
 --
--- Table structure for table `tipperiodo`
---
-
-DROP TABLE IF EXISTS `tipperiodo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tipperiodo` (
-  `IdTipPeriodo` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `DesTipPeriodo` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`IdTipPeriodo`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `tipperiodo`
---
-
-LOCK TABLES `tipperiodo` WRITE;
-/*!40000 ALTER TABLE `tipperiodo` DISABLE KEYS */;
-INSERT INTO `tipperiodo` VALUES (1,'Semestral',NULL,NULL);
-/*!40000 ALTER TABLE `tipperiodo` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tippueindigena`
 --
 
@@ -1295,7 +1449,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Admin','admin@admin.com',NULL,'$2y$12$C3U3pxpSAXJKzx0cKBcKouZY/DXqYWAKs0Gxy0Q9Apw4I0B.zOWJC',1,NULL,NULL,NULL);
+INSERT INTO `users` VALUES (1,'Admin','admin@admin.com',NULL,'$2y$12$IiJwngDrkTEZUNnehHpb8.XYyW5/HbSp23jr.x4BZCnoU70T28Tw.',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1338,4 +1492,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-03 15:52:56
+-- Dump completed on 2025-01-14 21:44:16
